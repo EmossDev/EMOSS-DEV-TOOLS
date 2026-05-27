@@ -1,0 +1,4 @@
+#!/bin/bash
+pwd > $PREFIX/lib/EMOSS-DEV-TOOLS/files/.pwd
+cd $PREFIX/lib/EMOSS-DEV-TOOLS
+bash emoss-dev-tools.sh $1
